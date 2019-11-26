@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itheima.mapper.UserMapper">
+
+    <!--查询所有用户信息,包含省份,包括模糊查询-->
+    <resultMap id="userMapping" type="user">
+        <id column="id" property="id"></id>
+        <result property="name" column="name"></result>
+        <result property="gender" column="gender"></result>
+        <result property="age" column="age"></result>
+        <result property="address" column="address"></result>
+        <result property="qq" column="qq"></result>
+        <result property="email" column="email"></result>
+        <association property="province"
+                     column="address"
+                     select="com.itheima.mapper.ProvinceMapper.findOne"></association>
+    </resultMap>
+    <select id="findAll" parameterType="user" resultMap="userMapping">
+        select * from user
+        <where>
+            <if test="name != null and name.length > 0">
+                and name like #{name}
+            </if>
+            <if test="address != null and address.length > 0">
+                and address = # {address}
+            </if>
+            <if test="email != null and email.length > 0">
+                and email like #{email}
+            </if>
+        </where>
+    </select>
+
+    <!--新增用户信息-->
+    <insert id="add" parameterType="user">
+        insert into user values (#{id},#{name},#{gender},#{age},#{address},
+                                  #{qq},#{email})
+    </insert>
+
+    <!--删除用户信息-->
+
+    <delete id="delete" parameterType="int">
+        delete from user where id=#{id}
+    </delete>
+
+    <!--根据Id查询用户信息-->
+
+    <select id="findById" parameterType="int" resultType="user">
+        select * from user where id = #{id}
+    </select>
+
+
+    <!--修改用户信息-->
+    <update id="update" parameterType="user">
+         UPDATE
+          `ssm`.`user`
+        SET
+          `name` = #{name},
+          `gender` = #{gender},
+          `age` = #{age},
+          `address` = #{address},
+          `qq` = #{qq},
+          `email` = #{email}
+        WHERE `id` = #{id} ;
+
+    </update>
+
+    <delete id="delSelected" parameterType="int">
+        delete from user where id = #{id}
+    </delete>
+</mapper>
